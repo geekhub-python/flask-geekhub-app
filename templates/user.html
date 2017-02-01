@@ -3,13 +3,12 @@
 {% block title %}GeekHub User{% endblock %}
 
 {% block page_content %}
+    {{ wtf.quick_form(form) }}
+
 {% if name %}
-
-{% endif %}
- {{ wtf.quick_form(form) }}
-{% endblock %}
-
 <div class="page-header">
     <h1>Hello, {{ name }}!</h1>
-    <h3>You user agent is  {{ user_agent }}{1}
+    <h3>You user agent is  {{ user_agent }}</h3>
 </div>
+{% endif %}
+{% endblock %}
