@@ -16,6 +16,7 @@ Bootstrap(app)
 Moment(app)
 manager = Manager(app)
 
+IMAGES_PATH = os.path.join(app.static_folder, 'uploads')
 
 @app.route('/')
 def index():
@@ -36,12 +37,15 @@ def hello_user():
 
 @app.route('/image', methods=['GET', 'POST'])
 def image():
+
     image = None
     form = ImageUploadForm()
     if form.validate_on_submit():
-        image = 'uploads/' + form.image_file.data.filename
-        form.image_file.data.save(os.path.join(app.static_folder, image))
-    return render_template('image.html', form=form, image=image)
+        image = form.image_file.data.filename
+        if not os.path.exists(IMAGES_PATH):
+            os.makedirs(IMAGES_PATH)
+        form.image_file.data.save(os.path.join(IMAGES_PATH, image))
+    return render_template('image.html', form=form, image='uploads/' + image if image else None)
 
 def _get_user_agent():
     return request.headers.get('User-Agent')
