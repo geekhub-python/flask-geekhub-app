@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}GeekHub User{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Hello, {{ name }}!</h1>
+    <h3>You user agent is  {{ user_agent }}{1}
+</div>
+<form method="POST">    
+ {{ wtf.quick_form(form) }} 
+{% endblock %}

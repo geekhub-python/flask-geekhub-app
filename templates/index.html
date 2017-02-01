@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Index page{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Hello GeekHub!</h1>
+</div>
+<p>The local date and time is {{ moment(date_now).format('LLL') }}.</p> 
+<p>That was {{ moment(date_now).fromNow(refresh=True) }}</p>
+{% endblock %}
