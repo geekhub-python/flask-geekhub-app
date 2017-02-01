@@ -1,9 +1,13 @@
-from flask import Flask, request, render_template
-from flask_bootstrap import Bootstrap
-from flask_script import Manager
-from flask_moment import Moment
 from datetime import datetime
-from user_form import UserForm
+import os
+
+from flask import Flask, request, render_template, redirect
+from flask_bootstrap import Bootstrap
+from flask_moment import Moment
+from flask_script import Manager
+
+from forms.user_form import UserForm
+from forms.image_form import ImageUploadForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Geekhub'
@@ -30,13 +34,21 @@ def hello_user():
         form.name.data = ''
     return render_template('user.html', name=name, user_agent=user_agent, form=form)
 
+@app.route('/image', methods=['GET', 'POST'])
+def image():
+    image = None
+    form = ImageUploadForm()
+    if form.validate_on_submit():
+        image = 'uploads/' + form.image_file.data.filename
+        form.image_file.data.save(os.path.join(app.static_folder, image))
+    return render_template('image.html', form=form, image=image)
 
 def _get_user_agent():
     return request.headers.get('User-Agent')
 
 
 @app.route('/redirect')
-def redirect():
+def geekhub_redirect():
     return redirect('http://geekhub.ck.ua')
 
 
