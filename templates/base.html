@@ -13,11 +13,13 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Geekhub APP</a>
+            <a class="navbar-brand" href="/">Geekhub Flask App</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="/">Home</a></li>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('hello_user') }}">User</a></li>
+                <li><a href="{{ url_for('redirect') }}">Geekhub</a></li>
             </ul>
         </div>
     </div>
