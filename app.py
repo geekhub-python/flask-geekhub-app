@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect, send_from_directory
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_script import Manager
@@ -60,6 +60,12 @@ def page_not_found(e):
 @app.errorhandler(500)
 def page_not_found(e):
     return render_template('500.html', e=e)
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
 if __name__ == '__main__':
