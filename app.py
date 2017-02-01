@@ -20,11 +20,11 @@ def index():
 
 @app.route('/user/<name>', methods=['GET', 'POST'])
 def hello_user(name):
+    name = None
     user_agent = get_user_agent()
-    form = UserForm(request.form)
-    if request.method == "POST":
+    form = UserForm()
+    if form.validate_on_submit:
         name = form.name.data
-        print(name)
     return render_template('user.html', 
                             name=name, user_agent=user_agent, form=form)
 
