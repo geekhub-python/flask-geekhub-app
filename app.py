@@ -74,7 +74,7 @@ def text():
 
 @app.route('/json')
 def json():
-    return jsonify({'status':'hello'})
+    return jsonify({})
 
 def _get_user_agent():
     return request.headers.get('User-Agent')
