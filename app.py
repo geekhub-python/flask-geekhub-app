@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-from flask import Flask, request, render_template, redirect, send_from_directory
+from flask import Flask, request, render_template, redirect, send_from_directory, session
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_script import Manager
@@ -37,7 +37,6 @@ def hello_user():
 
 @app.route('/image', methods=['GET', 'POST'])
 def image():
-
     image = None
     form = ImageUploadForm()
     if form.validate_on_submit():
@@ -46,6 +45,15 @@ def image():
             os.makedirs(IMAGES_PATH)
         form.image_file.data.save(os.path.join(IMAGES_PATH, image))
     return render_template('image.html', form=form, image='uploads/' + image if image else None)
+
+@app.route('/session')
+def session_test():
+    if 'count' not in session:
+        session['count'] = 1
+    else:
+        session['count'] += 1
+    return render_template('session.html', count=session['count'])
+
 
 def _get_user_agent():
     return request.headers.get('User-Agent')
