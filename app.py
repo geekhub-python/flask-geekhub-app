@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-from flask import Flask, request, render_template, redirect, send_from_directory, session
+from flask import Flask, request, render_template, redirect, send_from_directory, session, jsonify
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_script import Manager
@@ -18,6 +18,19 @@ manager = Manager(app)
 
 IMAGES_PATH = os.path.join(app.static_folder, 'uploads')
 
+@app.before_request
+def bf():
+    if 'count' not in session:
+        session['count'] = 1
+    else:
+        session['count'] += 1
+
+@app.after_request
+def af(response):
+    response.headers['Test'] = 'Hello'
+    response.set_cookie('test', 'test')
+    return response
+
 @app.route('/')
 def index():
     user_agent = _get_user_agent()
@@ -33,27 +46,35 @@ def hello_user():
     if form.validate_on_submit():
         name = form.name.data
         form.name.data = ''
-    return render_template('user.html', name=name, user_agent=user_agent, form=form)
+    return render_template('user.html', name=name, user_agent=user_agent, form=form), 207, {'user':'test'}
 
 @app.route('/image', methods=['GET', 'POST'])
 def image():
+    name = None
     image = None
     form = ImageUploadForm()
     if form.validate_on_submit():
         image = form.image_file.data.filename
+        name = form.name.data
         if not os.path.exists(IMAGES_PATH):
             os.makedirs(IMAGES_PATH)
         form.image_file.data.save(os.path.join(IMAGES_PATH, image))
-    return render_template('image.html', form=form, image='uploads/' + image if image else None)
+    return render_template('image.html',
+                           form=form,
+                           image='uploads/' + image if image else None,
+                           name=name)
 
 @app.route('/session')
 def session_test():
-    if 'count' not in session:
-        session['count'] = 1
-    else:
-        session['count'] += 1
     return render_template('session.html', count=session['count'])
 
+@app.route('/text')
+def text():
+    return render_template('text.txt', name="TEST NAME")
+
+@app.route('/json')
+def json():
+    return jsonify({'status':'hello'})
 
 def _get_user_agent():
     return request.headers.get('User-Agent')

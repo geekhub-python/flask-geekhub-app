@@ -9,7 +9,8 @@
                 {{ wtf.quick_form(form, enctype='multipart/form-data') }}
             </div>
         </div>
-        {% if image %}
+        {% if image and name%}
+            <h3>{{ name }}</h3>
             <img src="{{ url_for('static', filename=image) }}">
         {% endif %}
     </div>
