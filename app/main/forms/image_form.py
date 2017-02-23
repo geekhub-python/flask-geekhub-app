@@ -5,7 +5,7 @@ from wtforms import FileField, SubmitField, ValidationError, StringField
 class ImageUploadForm(Form):
     name = StringField('Name')
     image_file = FileField('Image file')
-    # submit = SubmitField('Submit')
+    submit = SubmitField('Submit')
 
     def validate_image_file(self, field):
         if field.data.filename[-4:].lower() != '.jpg':
