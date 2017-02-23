@@ -1,10 +1,9 @@
 from flask import render_template, request
 
+from app import db
+from app.models.user import User
 from .. import main
 from ..forms.user_form import UserForm
-from ..models.user import User
-
-from app import db
 
 @main.route('/user', methods=['GET', 'POST'])
 def hello_user():

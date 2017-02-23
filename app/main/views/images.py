@@ -4,8 +4,11 @@ from flask import render_template, current_app as app
 from ..forms.image_form import ImageUploadForm
 from .. import main
 
+from flask_login import login_required
+
 
 @main.route('/image', methods=['GET', 'POST'])
+@login_required
 def image():
     image = None
     form = ImageUploadForm()
