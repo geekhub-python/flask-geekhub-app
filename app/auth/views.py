@@ -4,8 +4,8 @@ from flask_login import login_user, login_required, logout_user, current_user
 from app.models.user import User, db
 
 from . import auth
-from .forms import LoginForm, ChangePasswordForm
-
+from .forms import LoginForm, ChangePasswordForm, RegistrationForm
+from app.email import send_email
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -40,3 +40,35 @@ def change_password():
         else:
             flash('Invalid password.')
     return render_template("auth/change_password.html", form=form)
+
+
+@auth.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(email=form.email.data,
+                    name=form.name.data,
+                    password=form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        token = user.generate_confirmation_token()
+        return render_template('auth/token.html', token=token)
+    return render_template('auth/register.html', form=form)
+
+@auth.route('/confirm/<token>')
+@login_required
+def confirm(token):
+    if current_user.confirmed:
+        return redirect(url_for('main.index'))
+    if current_user.confirm(token):
+        flash('You have confirmed your account. Thanks!')
+    else:
+        flash('The confirmation link is invalid or has expired.')
+    return render_template(url_for('main.index'))
+
+
+@auth.route('/confirm')
+@login_required
+def resend_confirmation():
+    token = current_user.generate_confirmation_token()
+    return render_template('auth/token', token=token)

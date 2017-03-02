@@ -8,6 +8,13 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     IMAGES_PATH = 'uploads'
+    MAIL_SERVER = 'smtp.googlemail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or 'zi.creep@gmail.com'
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or '19v87tK101'
+    MAIL_SUBJECT_PREFIX = '[Geekhub app]'
+    MAIL_SENDER = 'Geekhub Admin <admin@geekhub.ck.ua>'
 
     @staticmethod
     def init_app(app):
