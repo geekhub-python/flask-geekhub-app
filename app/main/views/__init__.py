@@ -3,6 +3,7 @@ import os
 from .. import main
 
 from .index import *
+from .user import *
 
 @main.route('/favicon.ico')
 def favicon():
