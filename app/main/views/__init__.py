@@ -4,6 +4,9 @@ from .. import main
 
 from .index import *
 from .user import *
+from .post import *
+
+from .follow import *
 
 @main.route('/favicon.ico')
 def favicon():
