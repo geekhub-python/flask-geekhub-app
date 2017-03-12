@@ -1,6 +1,7 @@
 from app import db
 import bleach
 from markdown import markdown
+from datetime import datetime
 
 
 class Comment(db.Model):
@@ -20,5 +21,6 @@ class Comment(db.Model):
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
+
 
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)

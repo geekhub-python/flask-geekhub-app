@@ -1,10 +1,13 @@
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
+import hashlib
+import os
 from . import main
 from app.main.forms.user import EditProfileForm, EditProfileAdminForm
-from app.models import db
+from app import db
 from app.models import Role, User
 from app.decorators import admin_required
+
 
 
 @main.route('/user/<username>')
@@ -21,6 +24,17 @@ def edit_profile():
         current_user.name = form.name.data
         current_user.location = form.location.data
         current_user.about_me = form.about_me.data
+        image_name = form.image_file.data.filename
+        image_path = current_app.config.get('IMAGES_PATH')
+
+        if not os.path.exists(image_path):
+            os.makedirs(image_path)
+
+        image_name = hashlib.sha256(current_user.email.encode('utf-8')).hexdigest() + os.path.splitext(image_name)[1]
+        form.image_file.data.save(
+            os.path.join(image_path, image_name)
+            )
+        current_user.avatar_url = image_path + '/' + image_name
         db.session.add(current_user)
         flash('Your profile has been updated.')
         return redirect(url_for('.user', username=current_user.username))

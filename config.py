@@ -16,6 +16,11 @@ class Config:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_SUBJECT_PREFIX = '[Geekhub app]'
     MAIL_SENDER = 'Geekhub Admin <admin@geekhub.ck.ua>'
+    POSTS_PER_PAGE = 5
+    FOLLOWERS_PER_PAGE = 50
+    COMMENTS_PER_PAGE = 30
+    # Put here default admin
+    ADMIN = 'no@admin.com'
 
     @staticmethod
     def init_app(app):

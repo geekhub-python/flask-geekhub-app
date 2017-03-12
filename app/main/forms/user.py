@@ -1,11 +1,13 @@
 from flask_wtf import Form
-from wtforms import StringField, TextAreaField, BooleanField, SelectField, SubmitField
+from wtforms import StringField, TextAreaField, BooleanField, SelectField, SubmitField, FileField
 from wtforms.validators import DataRequired, Length, Email, Regexp
 from wtforms import ValidationError
 from app.models import Role, User
+import imghdr
 
 
 class EditProfileForm(Form):
+    image_file = FileField('Image file')
     name = StringField('Real name', validators=[Length(0, 64)])
     location = StringField('Location', validators=[Length(0, 64)])
     about_me = TextAreaField('About me')
@@ -13,6 +15,7 @@ class EditProfileForm(Form):
 
 
 class EditProfileAdminForm(Form):
+    image_file = FileField('Image file')
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),
                                              Email()])
     username = StringField('Username', validators=[
@@ -41,3 +44,9 @@ class EditProfileAdminForm(Form):
         if field.data != self.user.username and \
                 User.query.filter_by(username=field.data).first():
             raise ValidationError('Username already in use.')
+
+    def validate_image_file(self, field):
+        if field.data.filename[-4:].lower() != '.jpg':
+            raise ValidationError('Invalid file extension')
+        if imghdr.what(field.data) != 'jpeg':
+            raise ValidationError('Invalid image format')
