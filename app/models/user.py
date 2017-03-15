@@ -2,18 +2,19 @@ from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
-import hashlib
 
 from flask_login import UserMixin, AnonymousUserMixin
 from app.models.role import Role, Permission
 from app.models.post import Post
 from app.models.follow import Follow
+from sqlalchemy import FetchedValue
 
 from app import db, login_manager
 
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
@@ -26,40 +27,18 @@ class User(UserMixin, db.Model):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
-    avatar_url = db.Column(db.String(64))
+    avatar_url = db.Column(db.String(64), default='uploads/default-user-image.png')
     followed = db.relationship('Follow',
-                               foreign_keys=[Follow.follower_id],
+                               foreign_keys='Follow.follower_id',
                                backref=db.backref('follower', lazy='joined'),
                                lazy='dynamic',
                                cascade='all, delete-orphan')
     followers = db.relationship('Follow',
-                                foreign_keys=[Follow.followed_id],
+                                foreign_keys='Follow.followed_id',
                                 backref=db.backref('followed', lazy='joined'),
                                 lazy='dynamic',
                                 cascade='all, delete-orphan')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
-
-    @staticmethod
-    def generate_fake(count=100):
-        from sqlalchemy.exc import IntegrityError
-        from random import seed
-        import forgery_py
-
-        seed()
-        for i in range(count):
-            u = User(email=forgery_py.internet.email_address(),
-                     username=forgery_py.internet.user_name(True),
-                     password=forgery_py.lorem_ipsum.word(),
-                     confirmed=True,
-                     name=forgery_py.name.full_name(),
-                     location=forgery_py.address.city(),
-                     about_me=forgery_py.lorem_ipsum.sentence(),
-                     member_since=forgery_py.date.date(True))
-            db.session.add(u)
-            try:
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
 
     @staticmethod
     def add_self_follows():
@@ -76,7 +55,7 @@ class User(UserMixin, db.Model):
                 self.role = Role.query.filter_by(permissions=0xff).first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
-        self.followed.append(Follow(followed=self))
+        # self.followed.append(Follow(followed=self))
 
     @property
     def password(self):

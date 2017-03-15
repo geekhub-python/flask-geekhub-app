@@ -1,11 +1,11 @@
-from flask import render_template, redirect, url_for, flash, current_app
+from flask import render_template, redirect, url_for, flash, current_app, request
 from flask_login import login_required, current_user
 import hashlib
 import os
 from . import main
 from app.main.forms.user import EditProfileForm, EditProfileAdminForm
 from app import db
-from app.models import Role, User
+from app.models import Role, User, Post
 from app.decorators import admin_required
 
 
@@ -13,7 +13,13 @@ from app.decorators import admin_required
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    return render_template('user.html', user=user)
+    page = request.args.get('page', 1, type=int)
+    pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=current_app.config['POSTS_PER_PAGE'],
+        error_out=False)
+    posts = pagination.items
+    return render_template('user.html', user=user, posts=posts,
+                           pagination=pagination)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -26,13 +32,14 @@ def edit_profile():
         current_user.about_me = form.about_me.data
         image_name = form.image_file.data.filename
         image_path = current_app.config.get('IMAGES_PATH')
+        image_folder = os.path.join(current_app.static_folder, image_path)
 
-        if not os.path.exists(image_path):
-            os.makedirs(image_path)
+        if not os.path.exists(image_folder):
+            os.makedirs(image_folder)
 
         image_name = hashlib.sha256(current_user.email.encode('utf-8')).hexdigest() + os.path.splitext(image_name)[1]
         form.image_file.data.save(
-            os.path.join(image_path, image_name)
+            os.path.join(image_folder, image_name)
             )
         current_user.avatar_url = image_path + '/' + image_name
         db.session.add(current_user)

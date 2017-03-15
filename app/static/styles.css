@@ -1,6 +1,10 @@
+.profile-thumbnail {
+    position: absolute;
+    width: 256px;
+}
 .profile-header {
     min-height: 260px;
-    margin-left: 50px;
+    margin-left: 280px;
 }
 div.post-tabs {
     margin-top: 16px;
@@ -27,6 +31,9 @@ div.post-date {
 }
 div.post-author {
     font-weight: bold;
+}
+div.post-thumbnail {
+    position: absolute;
 }
 div.post-content {
     margin-left: 48px;
@@ -77,7 +84,9 @@ div.flask-pagedown-preview {
     margin: 10px 0px 10px 0px;
     border: 1px solid #e0e0e0;
     padding: 4px;
+    min-height: 60px;
 }
+
 div.flask-pagedown-preview h1 {
     font-size: 140%;
 }
@@ -99,3 +108,16 @@ div.flask-pagedown-preview h3 {
 .table.followers tr {
     border-bottom: 1px solid #e0e0e0;
 }
+
+img.small-avatar {
+    width: 40px;
+}
+
+img.mini-avatar {
+    width: 18px;
+}
+
+img.smaller-avatar {
+    width: 32px;
+}
+
