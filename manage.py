@@ -61,6 +61,7 @@ def generate_fake():
         db.session.add(p)
         db.session.commit()
 
+
 @manager.command
 def test():
     """Run the unit tests."""
