@@ -11,11 +11,12 @@ from config import config
 bootstrap = Bootstrap()
 moment = Moment()
 db = SQLAlchemy()
+mail = Mail()
+pagedown = PageDown()
+
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
-mail = Mail()
-pagedown = PageDown()
 
 
 def create_app(config_name):
@@ -37,6 +38,10 @@ def create_app(config_name):
     #register
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
+    #api
+    from app.api.v1 import api as api_v1_blueprint
+    app.register_blueprint(api_v1_blueprint, url_prefix='/api/v1')
 
 
     return app
