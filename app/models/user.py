@@ -1,4 +1,4 @@
-from flask import current_app
+from flask import current_app, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
@@ -7,7 +7,6 @@ from flask_login import UserMixin, AnonymousUserMixin
 from app.models.role import Role, Permission
 from app.models.post import Post
 from app.models.follow import Follow
-from sqlalchemy import FetchedValue
 
 from app import db, login_manager
 
@@ -154,6 +153,41 @@ class User(UserMixin, db.Model):
     def followed_posts(self):
         return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
             .filter(Follow.follower_id == self.id)
+
+    def __repr__(self):
+        return '<User %r>' % self.username
+
+    def to_json(self):
+        json_user = {
+            'url':
+                url_for('api.get_user', id=self.id, _external=True),
+            'username':
+                self.username,
+            'member_since':
+                self.member_since,
+            'last_seen':
+                self.last_seen,
+            'posts':
+                url_for('api.get_user_posts', id=self.id, _external=True),
+            'followed_posts':
+                url_for('api.get_user_followed_posts', id=self.id, _external=True),
+            'post_count':
+                self.posts.count()
+        }
+        return json_user
+
+    def generate_auth_token(self, expiration):
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
+        return s.dumps({'id': self.id}).decode('ascii')
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return None
+        return User.query.get(data['id'])
 
     def __repr__(self):
         return '<User %r>' % self.username
