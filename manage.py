@@ -63,10 +63,14 @@ def generate_fake():
 
 
 @manager.command
-def test():
+@manager.option('-t')
+def test(test=None):
     """Run the unit tests."""
     import unittest
-    tests = unittest.TestLoader().discover('tests')
+    if test:
+        tests = unittest.TestLoader().discover('tests', pattern=test)
+    else:
+        tests = unittest.TestLoader().discover('tests', pattern='test*.py')
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 
