@@ -1,0 +1,15 @@
+#runners
+wsgi -H /Users/ek/src/tmp/flask-geekhub-app/venv/ --ini uwsgi.ini
+
+gunicorn -w 4 wsgi:application
+python wsgi.py
+
+#docker
+docker-compose build
+docker-compose up
+
+#heroku
+heroku login
+heroku create geekhub-python
+heroku addons:create heroku-postgresql:hobby-dev
+git push heroku master

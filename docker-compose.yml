@@ -1,0 +1,21 @@
+version: "2"
+
+services:
+  web:
+    build: .
+    container_name: web
+    environment:
+      DATABASE_URL: "postgres://postgres:secret@db/geekhub_db"
+      FLASK_CONFIG: "production"
+    ports:
+      - "8000:8000"
+
+  db:
+    image: postgres:9-alpine
+    environment:
+      POSTGRES_PASSWORD: "secret"
+      POSTGRES_DB: "geekhub_db"
+    volumes:
+      - /var/lib/postgresql/data
+    ports:
+      - "54320:5432"
